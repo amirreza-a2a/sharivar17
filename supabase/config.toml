@@ -1,0 +1,4 @@
+project_id = "tmmczucvodxeetuplaur"
+
+[functions.lesson-chat]
+verify_jwt = false
