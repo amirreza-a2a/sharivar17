@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
+import { BookOpen } from "lucide-react";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -23,7 +24,7 @@ const Auth = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
-        navigate("/");
+        navigate("/dashboard");
       }
     };
 
@@ -34,7 +35,7 @@ const Auth = () => {
       (event, session) => {
         if (session?.user) {
           setUser(session.user);
-          navigate("/");
+          navigate("/dashboard");
         } else {
           setUser(null);
         }
@@ -49,7 +50,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -112,19 +113,36 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">
-            {isSignUp ? "Create an account" : "Welcome back"}
-          </CardTitle>
-          <CardDescription className="text-center">
-            {isSignUp 
-              ? "Enter your details to create your account" 
-              : "Enter your credentials to access your account"
-            }
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen flex bg-background">
+      {/* Left side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-primary/5 flex-col justify-center items-center p-12">
+        <div className="text-center">
+          <div className="bg-primary p-4 rounded-2xl mb-6 w-fit mx-auto">
+            <BookOpen className="w-12 h-12 text-primary-foreground" />
+          </div>
+          <h1 className="text-4xl font-bold text-primary mb-4">
+            Infinite Learning
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-md">
+            Master embedded systems with AI-powered personalized learning paths
+          </p>
+        </div>
+      </div>
+      
+      {/* Right side - Auth form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">
+              {isSignUp ? "Create an account" : "Welcome back"}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {isSignUp 
+                ? "Enter your details to create your account" 
+                : "Enter your credentials to access your account"
+              }
+            </CardDescription>
+          </CardHeader>
         <form onSubmit={isSignUp ? handleSignUp : handleSignIn}>
           <CardContent className="space-y-4">
             {isSignUp && (
@@ -186,7 +204,8 @@ const Auth = () => {
             </Button>
           </CardFooter>
         </form>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
