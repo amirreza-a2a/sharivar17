@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
 import { BookOpen } from "lucide-react";
+import { TestUserPanel } from "@/components/TestUserPanel";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -205,6 +206,9 @@ const Auth = () => {
           </CardFooter>
         </form>
         </Card>
+        
+        {/* Test Users Panel - Only show in development */}
+        {process.env.NODE_ENV === 'development' && <TestUserPanel />}
       </div>
     </div>
   );
