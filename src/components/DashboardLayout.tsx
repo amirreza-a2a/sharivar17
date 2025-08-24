@@ -10,7 +10,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +37,7 @@ const sidebarItems = [
   { title: "Practice & Challenges", url: "/dashboard/practice", icon: Target },
   { title: "Research & R&D Tools", url: "/dashboard/research", icon: Wrench },
   { title: "PDF Analyzer", url: "/dashboard/pdf", icon: FileText },
+  { title: "Flashcards", url: "/dashboard/flashcards", icon: Brain },
   { title: "Electronics Hub", url: "/dashboard/electronics", icon: Microchip },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];

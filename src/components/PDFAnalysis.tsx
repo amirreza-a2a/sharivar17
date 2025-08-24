@@ -10,10 +10,14 @@ import {
   MessageSquare, 
   Download, 
   Loader2,
-  BookOpen
+  BookOpen,
+  CreditCard
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { FlashcardModal } from "@/components/FlashcardModal";
+import { flashcardStorage } from "@/utils/flashcardStorage";
+import { Flashcard } from "@/types/flashcard";
 
 interface PDFAnalysisProps {
   extractedText: string;
@@ -30,6 +34,8 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
   const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showFlashcardModal, setShowFlashcardModal] = useState(false);
+  const [extractedFlashcards, setExtractedFlashcards] = useState<Flashcard[]>([]);
   const { toast } = useToast();
 
   const performAnalysis = async (action: 'summarize' | 'explain' | 'question') => {
@@ -103,6 +109,37 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
     URL.revokeObjectURL(url);
   };
 
+  const extractFlashcards = () => {
+    if (!extractedText) {
+      toast({
+        title: "No content to extract",
+        description: "Please upload a PDF first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const cards = flashcardStorage.extractFlashcardsFromText(extractedText, 'pdf');
+    setExtractedFlashcards(cards);
+    setShowFlashcardModal(true);
+  };
+
+  const handleSaveFlashcards = (cards: Flashcard[], title: string) => {
+    const deck = flashcardStorage.saveDeck({
+      title: title || `${fileName.replace('.pdf', '')} Flashcards`,
+      source: 'pdf',
+      sourceFileName: fileName,
+      cards
+    });
+
+    toast({
+      title: "Flashcard deck created!",
+      description: `Created "${deck.title}" with ${cards.length} cards`,
+    });
+
+    setShowFlashcardModal(false);
+  };
+
   const getIcon = (type: string) => {
     switch (type) {
       case 'summarize': return <FileText className="h-4 w-4" />;
@@ -139,6 +176,15 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
           >
             <BookOpen className="h-4 w-4" />
             Explain
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={extractFlashcards}
+            disabled={isLoading}
+            className="gap-2 border-[#2979FF] text-[#2979FF] hover:bg-[#2979FF] hover:text-white"
+          >
+            🃏 Extract Flashcards
           </Button>
           {analysisResults.length > 0 && (
             <Button 
@@ -208,6 +254,14 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
           </div>
         </ScrollArea>
       </CardContent>
+      
+      <FlashcardModal
+        isOpen={showFlashcardModal}
+        onClose={() => setShowFlashcardModal(false)}
+        cards={extractedFlashcards}
+        deckTitle={`${fileName.replace('.pdf', '')} Flashcards`}
+        onSave={handleSaveFlashcards}
+      />
     </Card>
   );
 };
