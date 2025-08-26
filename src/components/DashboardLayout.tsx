@@ -11,7 +11,9 @@ import {
   LogOut,
   Menu,
   X,
-  Brain
+  Brain,
+  Lightbulb,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +40,8 @@ const sidebarItems = [
   { title: "Research & R&D Tools", url: "/dashboard/research", icon: Wrench },
   { title: "PDF Analyzer", url: "/dashboard/pdf", icon: FileText },
   { title: "Flashcards", url: "/dashboard/flashcards", icon: Brain },
+  { title: "Startup Lab", url: "/dashboard/startup-lab", icon: Lightbulb },
+  { title: "Mentorship", url: "/dashboard/mentorship", icon: Users },
   { title: "Electronics Hub", url: "/dashboard/electronics", icon: Microchip },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];

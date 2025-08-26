@@ -9,6 +9,8 @@ import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import LearningPath from "./pages/LearningPath";
 import FlashcardHub from "./pages/FlashcardHub";
+import StartupLab from "./pages/StartupLab";
+import MentorshipHub from "./pages/MentorshipHub";
 import PracticeProjectsPage from "./components/PracticeProjectsPage";
 import { RDToolsPage } from "./components/RDToolsPage";
 import { PDFAnalysisPage } from "./components/PDFAnalysisPage";
@@ -37,6 +39,8 @@ const App = () => (
               <Route path="research" element={<RDToolsPage />} />
               <Route path="pdf" element={<PDFAnalysisPage onBack={() => {}} />} />
               <Route path="flashcards" element={<FlashcardHub />} />
+              <Route path="startup-lab" element={<StartupLab />} />
+              <Route path="mentorship" element={<MentorshipHub />} />
               <Route path="electronics" element={<ElectronicsHubPage />} />
               <Route path="settings" element={<DashboardSettings />} />
             </Route>
