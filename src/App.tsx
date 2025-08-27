@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import LearningPath from "./pages/LearningPath";
+import Lessons from "./pages/Lessons";
 import FlashcardHub from "./pages/FlashcardHub";
 import StartupLab from "./pages/StartupLab";
 import MentorshipHub from "./pages/MentorshipHub";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="learning-path" element={<LearningPath />} />
+              <Route path="lessons" element={<Lessons />} />
               <Route path="practice" element={<PracticeProjectsPage onBack={() => {}} />} />
               <Route path="research" element={<RDToolsPage />} />
               <Route path="pdf" element={<PDFAnalysisPage onBack={() => {}} />} />

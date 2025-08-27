@@ -36,6 +36,7 @@ import {
 const sidebarItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "My Learning Path", url: "/dashboard/learning-path", icon: BookOpen },
+  { title: "Lessons", url: "/dashboard/lessons", icon: BookOpen },
   { title: "Practice & Challenges", url: "/dashboard/practice", icon: Target },
   { title: "Research & R&D Tools", url: "/dashboard/research", icon: Wrench },
   { title: "PDF Analyzer", url: "/dashboard/pdf", icon: FileText },
