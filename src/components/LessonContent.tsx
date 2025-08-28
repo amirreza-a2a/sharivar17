@@ -21,6 +21,7 @@ import {
 import { SubLesson, Quiz, LessonResource, UserProgress } from "@/types/lesson";
 import { toast } from "sonner";
 import { addNote, completeSubLesson } from "@/utils/lessonStorage";
+import { cn } from "@/lib/utils";
 
 interface LessonContentProps {
   subLesson: SubLesson;
@@ -109,37 +110,40 @@ export function LessonContent({
   return (
     <div className="flex-1 flex flex-col h-full">
       {/* Header */}
-      <div className="border-b bg-card p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{subLesson.title}</h1>
-            <div className="flex items-center space-x-4 text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <Clock className="w-4 h-4" />
-                <span>{subLesson.estimatedTime} min</span>
+      <div className="border-b bg-card p-8 gradient-muted">
+        <div className="flex items-start justify-between max-w-6xl mx-auto">
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold mb-4 text-foreground leading-tight">{subLesson.title}</h1>
+            <div className="flex items-center space-x-6 text-muted-foreground">
+              <div className="flex items-center space-x-2 bg-background/50 rounded-lg px-3 py-2">
+                <Clock className="w-4 h-4 text-info" />
+                <span className="font-medium">{subLesson.estimatedTime} min</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <BookOpen className="w-4 h-4" />
-                <span>Interactive Lesson</span>
+              <div className="flex items-center space-x-2 bg-background/50 rounded-lg px-3 py-2">
+                <BookOpen className="w-4 h-4 text-info" />
+                <span className="font-medium">Interactive Lesson</span>
               </div>
             </div>
           </div>
           
-          {/* Progress Ring */}
-          <div className="relative w-16 h-16">
-            <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+          {/* Enhanced Progress Ring */}
+          <div className="relative w-20 h-20 ml-6">
+            <svg className="w-20 h-20 transform -rotate-90 lesson-progress-ring" viewBox="0 0 36 36">
               <path
-                className="text-muted stroke-current"
+                className="text-muted/30 stroke-current"
                 fill="none"
-                strokeWidth="3"
+                strokeWidth="2.5"
                 d="M18 2.0845
                   a 15.9155 15.9155 0 0 1 0 31.831
                   a 15.9155 15.9155 0 0 1 0 -31.831"
               />
               <path
-                className="text-primary stroke-current"
+                className={cn(
+                  "stroke-current transition-all duration-1000 ease-out",
+                  subLesson.completed ? "text-success" : "text-primary"
+                )}
                 fill="none"
-                strokeWidth="3"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeDasharray={`${subLesson.completed ? 100 : 70}, 100`}
                 d="M18 2.0845
@@ -149,9 +153,13 @@ export function LessonContent({
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               {subLesson.completed ? (
-                <CheckCircle className="w-6 h-6 text-green-600" />
+                <div className="p-2 rounded-full bg-success/10">
+                  <CheckCircle className="w-6 h-6 text-success" />
+                </div>
               ) : (
-                <span className="text-sm font-bold">70%</span>
+                <div className="text-center">
+                  <span className="text-lg font-bold text-primary">70%</span>
+                </div>
               )}
             </div>
           </div>
@@ -161,16 +169,20 @@ export function LessonContent({
       {/* Content Area */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
-          <div className="p-6 max-w-4xl mx-auto">
+          <div className="p-8 max-w-5xl mx-auto">
             {/* Video Player (if available) */}
             {subLesson.videoUrl && (
-              <Card className="mb-6">
+              <Card className="mb-8 overflow-hidden shadow-lg">
                 <CardContent className="p-0">
-                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-muted-foreground">Video player would be embedded here</p>
-                      <Button variant="outline" className="mt-2">
+                  <div className="aspect-video bg-gradient-to-br from-primary/5 to-info/5 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50"></div>
+                    <div className="text-center relative z-10">
+                      <div className="p-4 rounded-full bg-primary/10 mb-4 inline-block">
+                        <Video className="w-12 h-12 text-primary" />
+                      </div>
+                      <p className="text-muted-foreground mb-4 font-medium">Interactive video lesson</p>
+                      <Button className="gradient-primary text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                        <Video className="w-4 h-4 mr-2" />
                         Play Video
                       </Button>
                     </div>
@@ -180,7 +192,7 @@ export function LessonContent({
             )}
 
             {/* Main Content */}
-            <div className="prose prose-lg max-w-none mb-8">
+            <div className="lesson-content-wrapper mb-10">
               <div 
                 className="lesson-content"
                 dangerouslySetInnerHTML={{ 
@@ -189,17 +201,16 @@ export function LessonContent({
               />
             </div>
 
-            {/* Text Selection Toolbar */}
+            {/* Enhanced Text Selection Toolbar */}
             {selectedText && (
-              <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50">
-                <Card className="shadow-lg">
-                  <CardContent className="p-3">
-                    <div className="flex items-center space-x-2">
+              <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
+                <Card className="shadow-2xl border-2 border-primary/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-3">
                       <Button
                         size="sm"
-                        variant="outline"
+                        className="gap-2 gradient-primary text-white font-medium rounded-lg px-4 py-2 hover:shadow-lg transition-all duration-200"
                         onClick={() => setShowNoteDialog(true)}
-                        className="gap-2"
                       >
                         <Highlighter className="w-4 h-4" />
                         Highlight
@@ -211,7 +222,7 @@ export function LessonContent({
                           setNoteText(selectedText);
                           setShowNoteDialog(true);
                         }}
-                        className="gap-2"
+                        className="gap-2 font-medium rounded-lg px-4 py-2 hover:bg-muted transition-all duration-200"
                       >
                         <StickyNote className="w-4 h-4" />
                         Add Note
@@ -252,29 +263,34 @@ export function LessonContent({
               </div>
             )}
 
-            {/* Resources */}
+            {/* Enhanced Resources */}
             {subLesson.resources && subLesson.resources.length > 0 && (
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Download className="w-5 h-5" />
+              <Card className="mb-8 shadow-lg">
+                <CardHeader className="gradient-muted">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 rounded-lg bg-info/10">
+                      <Download className="w-5 h-5 text-info" />
+                    </div>
                     Resources
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid gap-3">
+                <CardContent className="p-6">
+                  <div className="grid gap-4">
                     {subLesson.resources.map((resource) => (
-                      <div key={resource.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          {getResourceIcon(resource.type)}
+                      <div key={resource.id} className="flex items-center justify-between p-4 border rounded-xl hover:bg-muted/30 transition-all duration-200 group">
+                        <div className="flex items-center space-x-4">
+                          <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 transition-colors duration-200">
+                            {getResourceIcon(resource.type)}
+                          </div>
                           <div>
-                            <div className="font-medium">{resource.title}</div>
+                            <div className="font-semibold text-foreground">{resource.title}</div>
                             {resource.size && (
                               <div className="text-sm text-muted-foreground">{resource.size}</div>
                             )}
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="rounded-lg font-medium hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+                          <Download className="w-4 h-4 mr-2" />
                           Download
                         </Button>
                       </div>
@@ -284,19 +300,21 @@ export function LessonContent({
               </Card>
             )}
 
-            {/* Quiz Section */}
+            {/* Enhanced Quiz Section */}
             {subLesson.quiz && !subLesson.completed && (
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5" />
+              <Card className="mb-8 shadow-lg overflow-hidden">
+                <CardHeader className="gradient-primary text-white">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 rounded-lg bg-white/20">
+                      <Lightbulb className="w-5 h-5" />
+                    </div>
                     Knowledge Check
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <h3 className="text-lg font-semibold">{subLesson.quiz.question}</h3>
+                <CardContent className="p-6 space-y-6">
+                  <h3 className="text-xl font-bold text-foreground">{subLesson.quiz.question}</h3>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {subLesson.quiz.options.map((option, index) => (
                       <Button
                         key={index}
@@ -311,38 +329,62 @@ export function LessonContent({
                             ? "secondary"
                             : "outline"
                         }
-                        className="w-full text-left justify-start p-4 h-auto"
+                        className={cn(
+                          "w-full text-left justify-start p-6 h-auto rounded-xl font-medium transition-all duration-200",
+                          quizSubmitted && index === subLesson.quiz!.correctAnswer && "gradient-success text-white shadow-lg",
+                          quizSubmitted && index === quizAnswer && index !== subLesson.quiz!.correctAnswer && "bg-destructive text-destructive-foreground",
+                          !quizSubmitted && quizAnswer === index && "bg-primary/10 border-primary text-primary font-semibold",
+                          !quizSubmitted && quizAnswer !== index && "hover:bg-muted/50 hover:border-primary/30"
+                        )}
                         onClick={() => !quizSubmitted && setQuizAnswer(index)}
                         disabled={quizSubmitted}
                       >
-                        <span className="mr-3 font-bold">
-                          {String.fromCharCode(65 + index)}.
-                        </span>
-                        {option}
+                        <div className="flex items-center">
+                          <span className="mr-4 font-bold text-lg bg-muted rounded-full w-8 h-8 flex items-center justify-center">
+                            {String.fromCharCode(65 + index)}
+                          </span>
+                          <span className="text-base">{option}</span>
+                        </div>
                       </Button>
                     ))}
                   </div>
 
                   {quizSubmitted && subLesson.quiz.explanation && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm">{subLesson.quiz.explanation}</p>
+                    <div className="p-6 bg-info/5 border border-info/20 rounded-xl">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-info/10">
+                          <Lightbulb className="w-5 h-5 text-info" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-2">Explanation</h4>
+                          <p className="text-foreground leading-relaxed">{subLesson.quiz.explanation}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  <div className="flex justify-between">
-                    <div></div>
+                  <div className="flex justify-center pt-4">
                     <Button 
                       onClick={quizSubmitted ? handleComplete : handleQuizSubmit}
                       disabled={quizAnswer === null}
-                      className="gap-2"
+                      className={cn(
+                        "gap-3 px-8 py-3 rounded-xl font-semibold transition-all duration-200",
+                        quizSubmitted 
+                          ? "gradient-success text-white shadow-lg hover:shadow-xl hover:scale-105" 
+                          : "gradient-primary text-white shadow-lg hover:shadow-xl hover:scale-105"
+                      )}
+                      size="lg"
                     >
                       {quizSubmitted ? (
                         <>
-                          <Trophy className="w-4 h-4" />
+                          <Trophy className="w-5 h-5" />
                           Complete Lesson
                         </>
                       ) : (
-                        "Submit Answer"
+                        <>
+                          <CheckCircle className="w-5 h-5" />
+                          Submit Answer
+                        </>
                       )}
                     </Button>
                   </div>
@@ -350,11 +392,15 @@ export function LessonContent({
               </Card>
             )}
 
-            {/* Complete Button (for lessons without quiz) */}
+            {/* Enhanced Complete Button (for lessons without quiz) */}
             {!subLesson.quiz && !subLesson.completed && (
-              <div className="text-center">
-                <Button onClick={handleComplete} size="lg" className="gap-2">
-                  <CheckCircle className="w-5 h-5" />
+              <div className="text-center py-8">
+                <Button 
+                  onClick={handleComplete} 
+                  size="lg" 
+                  className="gap-3 px-12 py-4 rounded-xl font-semibold text-lg gradient-success text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200"
+                >
+                  <CheckCircle className="w-6 h-6" />
                   Mark as Complete
                 </Button>
               </div>

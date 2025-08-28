@@ -64,7 +64,7 @@ export function LessonSidebar({
 
   const getSubLessonIcon = (subLesson: SubLesson) => {
     if (subLesson.completed) {
-      return <CheckCircle className="w-4 h-4 text-green-600" />;
+      return <CheckCircle className="w-4 h-4 text-success" />;
     }
     if (subLesson.id === currentSubLessonId) {
       return <PlayCircle className="w-4 h-4 text-primary" />;
@@ -74,10 +74,10 @@ export function LessonSidebar({
 
   const getLessonIcon = (lesson: Lesson) => {
     if (lesson.completed) {
-      return <CheckCircle className="w-4 h-4 text-green-600" />;
+      return <CheckCircle className="w-4 h-4 text-success" />;
     }
     if (lesson.progress > 0) {
-      return <PlayCircle className="w-4 h-4 text-primary" />;
+      return <PlayCircle className="w-4 h-4 text-info" />;
     }
     return <BookOpen className="w-4 h-4 text-muted-foreground" />;
   };
@@ -105,37 +105,41 @@ export function LessonSidebar({
   }
 
   return (
-    <div className="w-80 border-r bg-card h-full flex flex-col">
+    <div className="w-80 border-r bg-card h-full flex flex-col shadow-sm">
       {/* Header */}
-      <div className="border-b p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-lg">Learning Path</h2>
-          <Button variant="ghost" size="icon" onClick={onToggle}>
+      <div className="border-b p-6 gradient-muted">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-bold text-xl text-foreground">Learning Path</h2>
+          <Button variant="ghost" size="icon" onClick={onToggle} className="hover:bg-background/20">
             <ChevronDown className="w-4 h-4" />
           </Button>
         </div>
         
         {/* User Stats */}
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div className="bg-muted rounded-lg p-3">
-            <div className="flex items-center justify-center space-x-1 text-orange-500 mb-1">
-              <Flame className="w-4 h-4" />
-              <span className="font-bold">{userProgress.streakDays}</span>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="bg-background rounded-xl p-4 border border-border/50 shadow-sm">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <div className="p-1 rounded-lg bg-warning/10">
+                <Flame className="w-4 h-4 text-warning" />
+              </div>
+              <span className="font-bold text-lg text-foreground">{userProgress.streakDays}</span>
             </div>
-            <span className="text-xs text-muted-foreground">Day Streak</span>
+            <span className="text-xs text-muted-foreground font-medium">Day Streak</span>
           </div>
-          <div className="bg-muted rounded-lg p-3">
-            <div className="flex items-center justify-center space-x-1 text-yellow-500 mb-1">
-              <Trophy className="w-4 h-4" />
-              <span className="font-bold">{userProgress.totalXP}</span>
+          <div className="bg-background rounded-xl p-4 border border-border/50 shadow-sm">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <div className="p-1 rounded-lg bg-warning/10">
+                <Trophy className="w-4 h-4 text-warning" />
+              </div>
+              <span className="font-bold text-lg text-foreground">{userProgress.totalXP}</span>
             </div>
-            <span className="text-xs text-muted-foreground">Total XP</span>
+            <span className="text-xs text-muted-foreground font-medium">Total XP</span>
           </div>
         </div>
 
         {/* Continue Button */}
         <Button 
-          className="w-full mt-4" 
+          className="w-full gradient-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02]" 
           onClick={() => {
             const currentModule = modules.find(m => m.id === userProgress.currentModuleId);
             const currentLesson = currentModule?.lessons.find(l => l.id === userProgress.currentLessonId);
@@ -150,7 +154,7 @@ export function LessonSidebar({
 
       {/* Module Navigation */}
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-2">
+        <div className="p-4 space-y-3">
           {modules.map((module) => (
             <Collapsible 
               key={module.id}
@@ -161,40 +165,50 @@ export function LessonSidebar({
                 <Button 
                   variant="ghost" 
                   className={cn(
-                    "w-full justify-start p-3 h-auto",
-                    !module.unlocked && "opacity-50"
+                    "w-full justify-start p-4 h-auto rounded-xl hover:bg-muted/50 transition-all duration-200",
+                    !module.unlocked && "opacity-50",
+                    expandedModules.has(module.id) && "bg-muted/30"
                   )}
                   disabled={!module.unlocked}
                 >
                   <div className="flex items-center space-x-3 flex-1 text-left">
                     {!module.unlocked ? (
-                      <Lock className="w-5 h-5 text-muted-foreground" />
+                      <div className="p-2 rounded-lg bg-muted">
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                      </div>
                     ) : (
-                      <>
+                      <div className="p-2 rounded-lg bg-primary/10">
                         {expandedModules.has(module.id) ? (
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="w-4 h-4 text-primary" />
                         ) : (
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-4 h-4 text-primary" />
                         )}
-                      </>
+                      </div>
                     )}
                     <div className="flex-1">
-                      <div className="font-medium text-sm">{module.title}</div>
-                      <div className="text-xs text-muted-foreground mt-1">
+                      <div className="font-semibold text-foreground mb-1">{module.title}</div>
+                      <div className="text-xs text-muted-foreground mb-2">
                         {module.lessons.length} lessons
                       </div>
                       {module.unlocked && (
-                        <Progress value={module.progress} className="mt-2 h-1" />
+                        <div className="space-y-1">
+                          <Progress value={module.progress} className="h-2" />
+                          <div className="text-xs text-muted-foreground">
+                            {Math.round(module.progress)}% complete
+                          </div>
+                        </div>
                       )}
                     </div>
                     {module.completed && (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <div className="p-1 rounded-full bg-success/10">
+                        <CheckCircle className="w-5 h-5 text-success" />
+                      </div>
                     )}
                   </div>
                 </Button>
               </CollapsibleTrigger>
               
-              <CollapsibleContent className="ml-4 mt-2 space-y-1">
+              <CollapsibleContent className="ml-6 mt-3 space-y-2">
                 {module.lessons.map((lesson) => (
                   <Collapsible
                     key={lesson.id}
@@ -202,46 +216,46 @@ export function LessonSidebar({
                     onOpenChange={() => toggleLesson(lesson.id)}
                   >
                     <CollapsibleTrigger asChild>
-                      <Button variant="ghost" className="w-full justify-start p-2 h-auto">
-                        <div className="flex items-center space-x-2 flex-1 text-left">
+                      <Button variant="ghost" className="w-full justify-start p-3 h-auto rounded-lg hover:bg-muted/50">
+                        <div className="flex items-center space-x-3 flex-1 text-left">
                           {expandedLessons.has(lesson.id) ? (
-                            <ChevronDown className="w-3 h-3" />
+                            <ChevronDown className="w-3 h-3 text-primary" />
                           ) : (
-                            <ChevronRight className="w-3 h-3" />
+                            <ChevronRight className="w-3 h-3 text-primary" />
                           )}
                           {getLessonIcon(lesson)}
                           <div className="flex-1">
-                            <div className="text-sm font-medium">{lesson.title}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {lesson.estimatedTime} min • 
-                              <Badge variant="outline" className="ml-1 text-xs">
+                            <div className="text-sm font-medium text-foreground mb-1">{lesson.title}</div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs text-muted-foreground">{lesson.estimatedTime} min</span>
+                              <Badge variant="outline" className="text-xs h-5">
                                 {lesson.difficulty}
                               </Badge>
                             </div>
                             {lesson.progress > 0 && (
-                              <Progress value={lesson.progress} className="mt-1 h-1" />
+                              <Progress value={lesson.progress} className="h-1.5" />
                             )}
                           </div>
                         </div>
                       </Button>
                     </CollapsibleTrigger>
                     
-                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
+                    <CollapsibleContent className="ml-8 mt-2 space-y-1">
                       {lesson.subLessons.map((subLesson) => (
                         <Button
                           key={subLesson.id}
                           variant="ghost"
                           size="sm"
                           className={cn(
-                            "w-full justify-start p-2 h-auto",
-                            subLesson.id === currentSubLessonId && "bg-primary/10 border border-primary/20"
+                            "w-full justify-start p-3 h-auto rounded-lg hover:bg-muted/50 transition-all duration-200",
+                            subLesson.id === currentSubLessonId && "bg-primary/10 border border-primary/20 shadow-sm"
                           )}
                           onClick={() => onSubLessonSelect(module.id, lesson.id, subLesson.id)}
                         >
-                          <div className="flex items-center space-x-2 text-left">
+                          <div className="flex items-center space-x-3 text-left">
                             {getSubLessonIcon(subLesson)}
                             <div>
-                              <div className="text-sm">{subLesson.title}</div>
+                              <div className="text-sm font-medium text-foreground">{subLesson.title}</div>
                               <div className="text-xs text-muted-foreground">
                                 {subLesson.estimatedTime} min
                               </div>
