@@ -205,7 +205,7 @@ All colors MUST be HSL.
   }
 
   .lesson-content-wrapper {
-    @apply max-w-none prose-lg;
+    @apply max-w-none text-lg;
   }
 
   .lesson-content-wrapper h1 {
