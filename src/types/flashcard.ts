@@ -2,24 +2,38 @@ export interface Flashcard {
   id: string;
   front: string;
   back: string;
+  extraNotes?: string;
+  imageUrl?: string;
+  audioUrl?: string;
 }
 
 export interface FlashcardDeck {
   id: string;
-  title: string;
-  source: 'pdf' | 'lesson';
-  sourceFileName?: string;
+  name: string;
+  description: string;
+  subject: string;
+  tags: string[];
   cards: Flashcard[];
-  createdAt: Date;
-  reviewProgress: number; // 0-100 percentage
-  totalReviews: number;
-  correctReviews: number;
+  coverImage?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  isPublic: boolean;
+  allowCollaboration: boolean;
+  shareCode?: string;
+  rating: number;
+  totalRatings: number;
+  downloads: number;
+  isOwned: boolean;
 }
 
-export interface ReviewSession {
-  deckId: string;
-  currentCardIndex: number;
-  correctAnswers: number;
-  totalAnswers: number;
-  startTime: Date;
+export interface FlashcardStats {
+  studied: number;
+  mastered: number;
+  needsReview: number;
+  lastStudied?: string;
 }
+
+export type DeckCategory = 'my-decks' | 'shared-decks' | 'import-decks';
+export type SortOption = 'newest' | 'popular' | 'rating' | 'alphabetical';
+export type ViewMode = 'grid' | 'list';

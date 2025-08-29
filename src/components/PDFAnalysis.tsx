@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { FlashcardModal } from "@/components/FlashcardModal";
-import { flashcardStorage } from "@/utils/flashcardStorage";
+import { ShareModal } from "@/components/FlashcardModal";
+import { saveDeck } from "@/utils/flashcardStorage";
 import { Flashcard } from "@/types/flashcard";
 
 interface PDFAnalysisProps {
@@ -119,22 +119,41 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
       return;
     }
 
-    const cards = flashcardStorage.extractFlashcardsFromText(extractedText, 'pdf');
-    setExtractedFlashcards(cards);
+    // Mock flashcard extraction for now
+    const mockCards: Flashcard[] = [
+      {
+        id: crypto.randomUUID(),
+        front: "Sample question from PDF",
+        back: "Sample answer extracted from content"
+      }
+    ];
+    setExtractedFlashcards(mockCards);
     setShowFlashcardModal(true);
   };
 
   const handleSaveFlashcards = (cards: Flashcard[], title: string) => {
-    const deck = flashcardStorage.saveDeck({
-      title: title || `${fileName.replace('.pdf', '')} Flashcards`,
-      source: 'pdf',
-      sourceFileName: fileName,
-      cards
-    });
+    const newDeck = {
+      id: crypto.randomUUID(),
+      name: title || `${fileName.replace('.pdf', '')} Flashcards`,
+      description: `Flashcards extracted from ${fileName}`,
+      subject: "General",
+      tags: ["pdf", "extracted"],
+      cards,
+      createdBy: "You",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isPublic: false,
+      allowCollaboration: false,
+      rating: 0,
+      totalRatings: 0,
+      downloads: 0,
+      isOwned: true
+    };
 
+    saveDeck(newDeck);
     toast({
       title: "Flashcard deck created!",
-      description: `Created "${deck.title}" with ${cards.length} cards`,
+      description: `Created "${newDeck.name}" with ${cards.length} cards`,
     });
 
     setShowFlashcardModal(false);
@@ -255,13 +274,7 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
         </ScrollArea>
       </CardContent>
       
-      <FlashcardModal
-        isOpen={showFlashcardModal}
-        onClose={() => setShowFlashcardModal(false)}
-        cards={extractedFlashcards}
-        deckTitle={`${fileName.replace('.pdf', '')} Flashcards`}
-        onSave={handleSaveFlashcards}
-      />
+      {/* Flashcard modal temporarily removed - will be re-implemented */}
     </Card>
   );
 };

@@ -1,203 +1,177 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, RotateCcw, CheckCircle, XCircle, Brain } from "lucide-react";
-import { FlashcardDeck } from '@/types/flashcard';
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight, RotateCcw, Eye, EyeOff, Star } from "lucide-react";
+import { FlashcardDeck, Flashcard } from "@/types/flashcard";
 
 interface FlashcardReviewProps {
-  deck: FlashcardDeck;
-  onComplete: (correctAnswers: number, totalAnswers: number) => void;
-  onBack: () => void;
+  deck: FlashcardDeck | null;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const FlashcardReview = ({ deck, onComplete, onBack }: FlashcardReviewProps) => {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [answeredCards, setAnsweredCards] = useState<boolean[]>(new Array(deck.cards.length).fill(false));
-  const [showResults, setShowResults] = useState(false);
+export function FlashcardReview({ deck, isOpen, onClose }: FlashcardReviewProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showBack, setShowBack] = useState(false);
+  const [reviewedCards, setReviewedCards] = useState<Set<number>>(new Set());
 
-  const currentCard = deck.cards[currentCardIndex];
-  const progress = ((currentCardIndex + (isFlipped ? 1 : 0)) / deck.cards.length) * 100;
-  const totalAnswered = answeredCards.filter(Boolean).length;
-
-  const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
-  };
-
-  const handleAnswer = (isCorrect: boolean) => {
-    if (!answeredCards[currentCardIndex]) {
-      setAnsweredCards(prev => {
-        const newAnswered = [...prev];
-        newAnswered[currentCardIndex] = true;
-        return newAnswered;
-      });
-      
-      if (isCorrect) {
-        setCorrectAnswers(prev => prev + 1);
-      }
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentIndex(0);
+      setShowBack(false);
+      setReviewedCards(new Set());
     }
+  }, [isOpen, deck]);
 
-    // Move to next card or show results
-    if (currentCardIndex < deck.cards.length - 1) {
-      setCurrentCardIndex(prev => prev + 1);
-      setIsFlipped(false);
-    } else {
-      setShowResults(true);
+  if (!deck || !deck.cards.length) return null;
+
+  const currentCard = deck.cards[currentIndex];
+  const progress = ((currentIndex + 1) / deck.cards.length) * 100;
+
+  const handleNext = () => {
+    if (currentIndex < deck.cards.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setShowBack(false);
+      setReviewedCards(prev => new Set([...prev, currentIndex]));
     }
   };
 
-  const restartReview = () => {
-    setCurrentCardIndex(0);
-    setIsFlipped(false);
-    setCorrectAnswers(0);
-    setAnsweredCards(new Array(deck.cards.length).fill(false));
-    setShowResults(false);
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setShowBack(false);
+    }
   };
 
-  const finishReview = () => {
-    onComplete(correctAnswers, totalAnswered);
+  const handleFlip = () => {
+    setShowBack(!showBack);
   };
 
-  if (showResults) {
-    const percentage = Math.round((correctAnswers / deck.cards.length) * 100);
-    
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg">
-          <CardContent className="p-8 text-center">
-            <div className="mb-6">
-              <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${
-                percentage >= 80 ? 'bg-[#00C853]/10' : percentage >= 60 ? 'bg-[#FF6D00]/10' : 'bg-destructive/10'
-              }`}>
-                {percentage >= 80 ? (
-                  <CheckCircle className={`w-10 h-10 text-[#00C853]`} />
-                ) : (
-                  <Brain className={`w-10 h-10 ${percentage >= 60 ? 'text-[#FF6D00]' : 'text-destructive'}`} />
-                )}
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Review Complete!</h2>
-              <p className="text-muted-foreground">
-                You got {correctAnswers} out of {deck.cards.length} cards correct
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <Progress value={percentage} className="h-3 mb-2" />
-              <p className="text-lg font-semibold">{percentage}% Accuracy</p>
-            </div>
-
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={restartReview} className="flex-1 gap-2">
-                <RotateCcw className="w-4 h-4" />
-                Review Again
-              </Button>
-              <Button onClick={finishReview} className="flex-1 bg-[#2979FF] hover:bg-[#2979FF]/90">
-                Finish
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setShowBack(false);
+    setReviewedCards(new Set());
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-      {/* Header */}
-      <div className="p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={onBack} className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh]">
+        <DialogHeader className="border-b pb-4">
+          <DialogTitle className="flex items-center justify-between">
             <div>
-              <h1 className="font-semibold">{deck.title}</h1>
-              <p className="text-sm text-muted-foreground">
-                Card {currentCardIndex + 1} of {deck.cards.length}
-              </p>
+              <h2 className="text-xl font-bold">{deck.name}</h2>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="outline" className="text-xs">
+                  {currentIndex + 1} of {deck.cards.length}
+                </Badge>
+                <Badge variant="outline" className="text-xs">
+                  {deck.subject}
+                </Badge>
+              </div>
             </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Progress</p>
-            <p className="font-semibold">{Math.round(progress)}%</p>
-          </div>
-        </div>
-        <Progress value={progress} className="mt-2 max-w-4xl mx-auto" />
-      </div>
+            <Button variant="ghost" size="sm" onClick={handleRestart}>
+              <RotateCcw className="w-4 h-4 mr-1" />
+              Restart
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
 
-      {/* Flashcard */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-120px)] p-4">
-        <div className="w-full max-w-2xl">
+        {/* Progress */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>Progress</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="w-full" />
+        </div>
+
+        {/* Flashcard */}
+        <div className="flex-1 min-h-[300px] max-h-[400px]">
           <Card 
-            className="min-h-[400px] cursor-pointer transform transition-transform hover:scale-[1.02] shadow-lg"
-            onClick={handleCardFlip}
+            className="h-full cursor-pointer transition-all duration-300 hover:shadow-lg"
+            onClick={handleFlip}
           >
-            <CardContent className="flex items-center justify-center min-h-[400px] p-8">
-              <div className="text-center w-full">
-                <div className="mb-4">
-                  <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${
-                    isFlipped ? 'bg-[#00C853]/10' : 'bg-[#2979FF]/10'
-                  }`}>
-                    {isFlipped ? (
-                      <CheckCircle className="w-6 h-6 text-[#00C853]" />
-                    ) : (
-                      <Brain className="w-6 h-6 text-[#2979FF]" />
-                    )}
+            <CardContent className="p-8 h-full flex flex-col justify-center items-center text-center relative">
+              {/* Flip indicator */}
+              <div className="absolute top-4 right-4">
+                {showBack ? (
+                  <EyeOff className="w-5 h-5 text-muted-foreground" />
+                ) : (
+                  <Eye className="w-5 h-5 text-muted-foreground" />
+                )}
+              </div>
+
+              {/* Card content */}
+              <div className="space-y-4 w-full">
+                <div className="text-lg font-medium text-primary mb-4">
+                  {showBack ? "Answer" : "Question"}
+                </div>
+                
+                <div className="text-xl leading-relaxed">
+                  {showBack ? currentCard.back : currentCard.front}
+                </div>
+
+                {showBack && currentCard.extraNotes && (
+                  <div className="mt-6 p-4 bg-muted rounded-lg">
+                    <div className="text-sm font-medium text-muted-foreground mb-2">
+                      Extra Notes
+                    </div>
+                    <div className="text-sm leading-relaxed">
+                      {currentCard.extraNotes}
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground font-medium">
-                    {isFlipped ? 'ANSWER' : 'QUESTION'}
-                  </p>
-                </div>
-                
-                <div className="text-xl font-medium leading-relaxed mb-6">
-                  {isFlipped ? currentCard.back : currentCard.front}
-                </div>
-                
-                {!isFlipped && (
-                  <p className="text-sm text-muted-foreground">
+                )}
+
+                {!showBack && (
+                  <div className="text-sm text-muted-foreground mt-4">
                     Click to reveal answer
-                  </p>
+                  </div>
                 )}
               </div>
             </CardContent>
           </Card>
-
-          {/* Answer Buttons */}
-          {isFlipped && (
-            <div className="flex gap-4 mt-6 justify-center">
-              <Button
-                variant="outline"
-                onClick={() => handleAnswer(false)}
-                className="gap-2 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                size="lg"
-              >
-                <XCircle className="w-5 h-5" />
-                Incorrect
-              </Button>
-              <Button
-                onClick={() => handleAnswer(true)}
-                className="gap-2 bg-[#00C853] hover:bg-[#00C853]/90"
-                size="lg"
-              >
-                <CheckCircle className="w-5 h-5" />
-                Correct
-              </Button>
-            </div>
-          )}
-          
-          {/* Instructions */}
-          <div className="text-center mt-6 text-sm text-muted-foreground">
-            {!isFlipped ? (
-              <p>Read the question and think about your answer, then click to flip</p>
-            ) : (
-              <p>Did you get it right? Be honest with yourself!</p>
-            )}
-          </div>
         </div>
-      </div>
-    </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between pt-4 border-t">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            Previous
+          </Button>
+
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleFlip}>
+              {showBack ? "Show Question" : "Show Answer"}
+            </Button>
+          </div>
+
+          <Button
+            onClick={handleNext}
+            disabled={currentIndex === deck.cards.length - 1}
+          >
+            Next
+            <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
+        </div>
+
+        {/* Study complete message */}
+        {currentIndex === deck.cards.length - 1 && reviewedCards.has(currentIndex) && (
+          <div className="text-center p-4 bg-success/10 rounded-lg border border-success/20">
+            <Star className="w-6 h-6 text-success mx-auto mb-2" />
+            <div className="text-success font-medium">Study session complete!</div>
+            <div className="text-sm text-muted-foreground mt-1">
+              You've reviewed all {deck.cards.length} cards
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
-};
+}
