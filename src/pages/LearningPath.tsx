@@ -178,7 +178,7 @@ export default function LearningPath() {
             <Brain className="w-4 h-4" />
             Retake Assessment
           </Button>
-          <Button onClick={() => setShowLesson(true)} className="gap-2">
+          <Button onClick={() => navigate('/lessons')} className="gap-2">
             <PlayCircle className="w-4 h-4" />
             Continue Learning
           </Button>
