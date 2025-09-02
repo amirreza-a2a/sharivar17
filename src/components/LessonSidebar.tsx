@@ -25,6 +25,7 @@ interface LessonSidebarProps {
   onSubLessonSelect: (moduleId: string, lessonId: string, subLessonId: string) => void;
   collapsed: boolean;
   onToggle: () => void;
+  onEnterFullscreen?: () => void;
 }
 
 export function LessonSidebar({ 
@@ -33,7 +34,8 @@ export function LessonSidebar({
   currentSubLessonId, 
   onSubLessonSelect,
   collapsed,
-  onToggle 
+  onToggle,
+  onEnterFullscreen 
 }: LessonSidebarProps) {
   const [expandedModules, setExpandedModules] = useState<Set<string>>(
     new Set([userProgress.currentModuleId])
@@ -145,6 +147,9 @@ export function LessonSidebar({
             const currentLesson = currentModule?.lessons.find(l => l.id === userProgress.currentLessonId);
             if (currentModule && currentLesson) {
               onSubLessonSelect(currentModule.id, currentLesson.id, userProgress.currentSubLessonId);
+              if (onEnterFullscreen) {
+                onEnterFullscreen();
+              }
             }
           }}
         >
