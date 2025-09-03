@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Plus, Lightbulb, Target, Users, TrendingUp, Sparkles, Briefcase, GraduationCap, BookmarkPlus, MessageCircle, User, Calendar, ArrowRight, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { Plus, Lightbulb, Target, Users, TrendingUp, Sparkles, Briefcase, GraduationCap, BookmarkPlus, MessageCircle, User, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { startupStorage } from "@/utils/startupStorage";
 import type { StartupIdea } from "@/types/startup";
 import { toast } from "sonner";
@@ -41,269 +40,9 @@ const mockChallenges = [
     stakeholder: "Dr. Sarah Chen, MIT",
     impact: "Revolutionary AI processing for edge devices, smartphones, and IoT sensors",
     requirements: "Industry partner for manufacturing, $2M funding, regulatory approval",
-  posted: "1 week ago"
+    posted: "1 week ago"
   }
 ];
-
-const mockRoadmapData = [
-  {
-    id: "q1-2024",
-    title: "Q1 2024 - Foundation",
-    tasks: [
-      { id: "1", title: "Market Research", status: "completed", priority: "high" },
-      { id: "2", title: "MVP Design", status: "completed", priority: "high" },
-      { id: "3", title: "Team Building", status: "in-progress", priority: "medium" }
-    ]
-  },
-  {
-    id: "q2-2024", 
-    title: "Q2 2024 - Development",
-    tasks: [
-      { id: "4", title: "Backend Development", status: "in-progress", priority: "high" },
-      { id: "5", title: "Frontend Implementation", status: "pending", priority: "high" },
-      { id: "6", title: "Beta Testing Setup", status: "pending", priority: "medium" }
-    ]
-  },
-  {
-    id: "q3-2024",
-    title: "Q3 2024 - Launch Prep", 
-    tasks: [
-      { id: "7", title: "Marketing Campaign", status: "pending", priority: "high" },
-      { id: "8", title: "Legal Documentation", status: "pending", priority: "medium" },
-      { id: "9", title: "Partnership Outreach", status: "pending", priority: "low" }
-    ]
-  }
-];
-
-function RoadmapZoomControls({ 
-  zoom, 
-  onZoomIn, 
-  onZoomOut, 
-  onReset 
-}: { 
-  zoom: number; 
-  onZoomIn: () => void; 
-  onZoomOut: () => void; 
-  onReset: () => void; 
-}) {
-  const [showIndicator, setShowIndicator] = useState(false);
-
-  useEffect(() => {
-    setShowIndicator(true);
-    const timer = setTimeout(() => setShowIndicator(false), 1000);
-    return () => clearTimeout(timer);
-  }, [zoom]);
-
-  return (
-    <TooltipProvider>
-      <div className="fixed bottom-6 right-6 flex flex-col gap-2 bg-background/80 backdrop-blur-sm border rounded-lg p-2 shadow-lg z-50">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={onZoomIn}
-              disabled={zoom >= 2.5}
-              className="h-8 w-8"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">Zoom In (+)</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={onReset}
-              className="h-8 w-8"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">Reset Zoom (0)</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={onZoomOut}
-              disabled={zoom <= 0.5}
-              className="h-8 w-8"
-            >
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">Zoom Out (-)</TooltipContent>
-        </Tooltip>
-
-        {showIndicator && (
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs animate-fade-in">
-            {Math.round(zoom * 100)}%
-          </div>
-        )}
-      </div>
-    </TooltipProvider>
-  );
-}
-
-function StartupRoadmap() {
-  const [zoom, setZoom] = useState(1);
-  const roadmapRef = useRef<HTMLDivElement>(null);
-
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.25, 0.5));
-  const handleReset = () => setZoom(1);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        switch (e.key) {
-          case '+':
-          case '=':
-            e.preventDefault();
-            handleZoomIn();
-            break;
-          case '-':
-            e.preventDefault();
-            handleZoomOut();
-            break;
-          case '0':
-            e.preventDefault();
-            handleReset();
-            break;
-        }
-      } else {
-        switch (e.key) {
-          case '+':
-            handleZoomIn();
-            break;
-          case '-':
-            handleZoomOut();
-            break;
-          case '0':
-            handleReset();
-            break;
-        }
-      }
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        if (e.deltaY < 0) {
-          handleZoomIn();
-        } else {
-          handleZoomOut();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    roadmapRef.current?.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      roadmapRef.current?.removeEventListener('wheel', handleWheel);
-    };
-  }, []);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'pending': return 'bg-gray-100 text-gray-600 border-gray-200';
-      default: return 'bg-gray-100 text-gray-600 border-gray-200';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'border-l-red-500';
-      case 'medium': return 'border-l-yellow-500';
-      case 'low': return 'border-l-green-500';
-      default: return 'border-l-gray-300';
-    }
-  };
-
-  return (
-    <div className="mt-12">
-      <div className="text-center space-y-4 mb-8">
-        <h2 className="text-2xl font-bold">Startup Roadmap</h2>
-        <p className="text-muted-foreground">
-          Track your startup journey with interactive milestones and tasks
-        </p>
-      </div>
-
-      <div 
-        ref={roadmapRef}
-        className="relative overflow-auto border rounded-lg bg-background/50 p-6"
-        style={{
-          transform: `scale(${zoom})`,
-          transformOrigin: 'top left',
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          height: zoom < 1 ? `${100 / zoom}%` : 'auto',
-          width: zoom < 1 ? `${100 / zoom}%` : 'auto'
-        }}
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {mockRoadmapData.map((quarter) => (
-            <Card key={quarter.id} className="h-fit">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">{quarter.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {quarter.tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className={`p-3 border-l-4 rounded-r-lg bg-card hover:bg-accent/50 transition-colors cursor-pointer ${getPriorityColor(task.priority)}`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className={`font-medium ${zoom < 0.75 ? 'text-xs' : 'text-sm'}`}>
-                        {task.title}
-                      </h4>
-                      <Badge 
-                        variant="secondary" 
-                        className={`${getStatusColor(task.status)} ${zoom < 0.75 ? 'text-xs px-1 py-0' : 'text-xs'}`}
-                      >
-                        {task.status}
-                      </Badge>
-                    </div>
-                    {zoom >= 0.75 && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className={`w-2 h-2 rounded-full ${
-                          task.priority === 'high' ? 'bg-red-500' :
-                          task.priority === 'medium' ? 'bg-yellow-500' :
-                          'bg-green-500'
-                        }`} />
-                        <span>{task.priority} priority</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full mt-4">
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add Task
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      <RoadmapZoomControls
-        zoom={zoom}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onReset={handleReset}
-      />
-    </div>
-  );
-}
 
 interface ChallengeResearch {
   id: string;
@@ -762,8 +501,6 @@ export default function StartupLab() {
           ))
         )}
       </div>
-
-      <StartupRoadmap />
 
       {/* Industry ↔ Academia Bridge */}
       <div className="mt-12">
