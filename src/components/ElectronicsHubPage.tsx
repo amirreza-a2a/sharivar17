@@ -130,7 +130,7 @@ const ElectronicsHubPage = () => {
 
         {/* Main Navigation Tabs */}
         <Tabs defaultValue="parts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 bg-muted/50">
             <TabsTrigger value="parts" className="flex items-center gap-2">
               <Microchip className="h-4 w-4" />
               Parts
@@ -146,10 +146,6 @@ const ElectronicsHubPage = () => {
             <TabsTrigger value="standards" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
               Standards
-            </TabsTrigger>
-            <TabsTrigger value="industry" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Industry
             </TabsTrigger>
             <TabsTrigger value="research" className="flex items-center gap-2">
               <GraduationCap className="h-4 w-4" />
@@ -348,65 +344,6 @@ const ElectronicsHubPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Industry ↔ Academia */}
-          <TabsContent value="industry" className="space-y-6">
-            <div className="text-center space-y-4">
-              <h3 className="text-2xl font-bold">Industry ↔ Academia Bridge</h3>
-              <p className="text-muted-foreground">Connect research with real-world applications</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5" />
-                    Industry Challenges
-                  </CardTitle>
-                  <CardDescription>Real problems seeking research solutions</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 border rounded-lg">
-                    <h4 className="font-semibold">Low-Power 5G Modem Design</h4>
-                    <p className="text-sm text-muted-foreground mt-1">Seeking breakthrough in power efficiency for mobile devices</p>
-                    <div className="flex gap-2 mt-2">
-                      <Badge>5G</Badge>
-                      <Badge>Power</Badge>
-                      <Badge>RF</Badge>
-                    </div>
-                  </div>
-                  <Button className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Post Challenge
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5" />
-                    Research Solutions
-                  </CardTitle>
-                  <CardDescription>Academic innovations ready for industry</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 border rounded-lg">
-                    <h4 className="font-semibold">Neuromorphic Computing Chips</h4>
-                    <p className="text-sm text-muted-foreground mt-1">Brain-inspired computing for ultra-low power AI</p>
-                    <div className="flex gap-2 mt-2">
-                      <Badge>AI</Badge>
-                      <Badge>Neuromorphic</Badge>
-                      <Badge>Low-Power</Badge>
-                    </div>
-                  </div>
-                  <Button className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Submit Research
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
 
           {/* Research Kits */}
           <TabsContent value="research" className="space-y-6">

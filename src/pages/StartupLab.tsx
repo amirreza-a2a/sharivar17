@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Lightbulb, Target, Users, TrendingUp, Sparkles } from "lucide-react";
+import { Plus, Lightbulb, Target, Users, TrendingUp, Sparkles, Briefcase, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -268,6 +268,66 @@ export default function StartupLab() {
             </Card>
           ))
         )}
+      </div>
+
+      {/* Industry ↔ Academia Bridge */}
+      <div className="mt-12">
+        <div className="text-center space-y-4 mb-8">
+          <h2 className="text-2xl font-bold">Industry ↔ Academia Bridge</h2>
+          <p className="text-muted-foreground">Connect research with real-world applications and startup opportunities</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5" />
+                Industry Challenges
+              </CardTitle>
+              <CardDescription>Real problems seeking research solutions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 border rounded-lg">
+                <h4 className="font-semibold">Low-Power 5G Modem Design</h4>
+                <p className="text-sm text-muted-foreground mt-1">Seeking breakthrough in power efficiency for mobile devices</p>
+                <div className="flex gap-2 mt-2">
+                  <Badge>5G</Badge>
+                  <Badge>Power</Badge>
+                  <Badge>RF</Badge>
+                </div>
+              </div>
+              <Button className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Post Challenge
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5" />
+                Research Solutions
+              </CardTitle>
+              <CardDescription>Academic innovations ready for industry</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 border rounded-lg">
+                <h4 className="font-semibold">Neuromorphic Computing Chips</h4>
+                <p className="text-sm text-muted-foreground mt-1">Brain-inspired computing for ultra-low power AI</p>
+                <div className="flex gap-2 mt-2">
+                  <Badge>AI</Badge>
+                  <Badge>Neuromorphic</Badge>
+                  <Badge>Low-Power</Badge>
+                </div>
+              </div>
+              <Button className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Submit Research
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
