@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Lightbulb, Target, Users, TrendingUp, Sparkles, Briefcase, GraduationCap } from "lucide-react";
+import { Plus, Lightbulb, Target, Users, TrendingUp, Sparkles, Briefcase, GraduationCap, BookmarkPlus, MessageCircle, User, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,226 @@ const stageColors = {
   prototype: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
   launched: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
 };
+
+const mockChallenges = [
+  {
+    id: "1",
+    title: "Low-Power 5G Modem Design",
+    description: "We are seeking breakthrough innovations in power efficiency for mobile 5G modems. Current solutions consume 40% more power than 4G counterparts, significantly impacting battery life. The ideal solution should reduce power consumption by at least 30% while maintaining performance standards.",
+    tags: ["5G", "Power", "RF"],
+    type: "challenge" as const,
+    stakeholder: "TechCorp Industries",
+    impact: "Could extend smartphone battery life by 6-8 hours and enable new IoT applications",
+    requirements: "PhD in Electrical Engineering, 3+ years RF experience, access to lab facilities",
+    posted: "2 days ago"
+  },
+  {
+    id: "2", 
+    title: "Neuromorphic Computing Chips",
+    description: "Brain-inspired computing architecture that mimics neural networks in hardware, achieving 1000x lower power consumption than traditional processors for AI workloads. Our research has demonstrated successful pattern recognition with 99.2% accuracy using only 2mW of power.",
+    tags: ["AI", "Neuromorphic", "Low-Power"],
+    type: "research" as const,
+    stakeholder: "Dr. Sarah Chen, MIT",
+    impact: "Revolutionary AI processing for edge devices, smartphones, and IoT sensors",
+    requirements: "Industry partner for manufacturing, $2M funding, regulatory approval",
+    posted: "1 week ago"
+  }
+];
+
+interface ChallengeResearch {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  type: "challenge" | "research";
+  stakeholder: string;
+  impact: string;
+  requirements: string;
+  posted: string;
+}
+
+function ChallengeModal({ 
+  item, 
+  isOpen, 
+  onClose 
+}: { 
+  item: ChallengeResearch | null; 
+  isOpen: boolean; 
+  onClose: () => void; 
+}) {
+  const [showTeamForm, setShowTeamForm] = useState(false);
+  
+  if (!item) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <div>
+              <span className="text-xl">{item.title}</span>
+              <div className="flex gap-2 mt-2">
+                {item.tags.map(tag => (
+                  <Badge key={tag} variant="secondary">{tag}</Badge>
+                ))}
+              </div>
+            </div>
+            <Badge variant={item.type === "challenge" ? "destructive" : "default"}>
+              {item.type === "challenge" ? "Industry Challenge" : "Research Solution"}
+            </Badge>
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          <div>
+            <h3 className="font-semibold mb-2">Description</h3>
+            <p className="text-muted-foreground">{item.description}</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Stakeholder
+              </h3>
+              <p className="text-sm text-muted-foreground">{item.stakeholder}</p>
+              <p className="text-xs text-muted-foreground mt-1">Posted {item.posted}</p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <Target className="w-4 h-4" />
+                Potential Impact
+              </h3>
+              <p className="text-sm text-muted-foreground">{item.impact}</p>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold mb-2">Requirements & Expectations</h3>
+            <p className="text-sm text-muted-foreground">{item.requirements}</p>
+          </div>
+          
+          {!showTeamForm ? (
+            <div className="flex gap-3 pt-4 border-t">
+              <Button 
+                onClick={() => setShowTeamForm(true)}
+                className="flex-1"
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Form a Team
+              </Button>
+              <Button variant="outline">
+                <BookmarkPlus className="w-4 h-4 mr-2" />
+                Save for Later
+              </Button>
+              <Button variant="outline">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Contact Mentor
+              </Button>
+            </div>
+          ) : (
+            <TeamFormationWizard 
+              challengeTitle={item.title}
+              onBack={() => setShowTeamForm(false)}
+              onComplete={() => {
+                toast.success("Team created successfully!");
+                setShowTeamForm(false);
+                onClose();
+              }}
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TeamFormationWizard({ 
+  challengeTitle, 
+  onBack, 
+  onComplete 
+}: { 
+  challengeTitle: string; 
+  onBack: () => void; 
+  onComplete: () => void;
+}) {
+  const [teamData, setTeamData] = useState({
+    teamName: "",
+    myRole: "",
+    description: "",
+    lookingFor: ""
+  });
+
+  const roles = ["Tech Lead", "Researcher", "Designer", "Product Manager", "Business Development"];
+
+  return (
+    <div className="space-y-6 pt-4 border-t">
+      <div>
+        <h3 className="font-semibold mb-2">Create Team for: {challengeTitle}</h3>
+        <p className="text-sm text-muted-foreground">Form a startup team to tackle this challenge together</p>
+      </div>
+      
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="teamName">Team Name</Label>
+          <Input
+            id="teamName"
+            value={teamData.teamName}
+            onChange={(e) => setTeamData(prev => ({ ...prev, teamName: e.target.value }))}
+            placeholder="e.g., PowerTech Innovations"
+          />
+        </div>
+        
+        <div>
+          <Label htmlFor="myRole">Your Role</Label>
+          <Select value={teamData.myRole} onValueChange={(value) => setTeamData(prev => ({ ...prev, myRole: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select your role" />
+            </SelectTrigger>
+            <SelectContent>
+              {roles.map(role => (
+                <SelectItem key={role} value={role}>{role}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
+      <div>
+        <Label htmlFor="description">Team Vision</Label>
+        <Textarea
+          id="description"
+          value={teamData.description}
+          onChange={(e) => setTeamData(prev => ({ ...prev, description: e.target.value }))}
+          placeholder="Describe your approach to solving this challenge..."
+          className="min-h-[80px]"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="lookingFor">Looking for Team Members</Label>
+        <Textarea
+          id="lookingFor"
+          value={teamData.lookingFor}
+          onChange={(e) => setTeamData(prev => ({ ...prev, lookingFor: e.target.value }))}
+          placeholder="What skills and expertise are you seeking? e.g., RF Engineers, UI/UX Designer..."
+          className="min-h-[60px]"
+        />
+      </div>
+      
+      <div className="flex gap-3">
+        <Button variant="outline" onClick={onBack}>
+          Back to Details
+        </Button>
+        <Button onClick={onComplete} className="flex-1">
+          <ArrowRight className="w-4 h-4 mr-2" />
+          Create Team & Start Project
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function IdeaCanvas({ onSave }: { onSave: (idea: StartupIdea) => void }) {
   const [formData, setFormData] = useState({
@@ -142,9 +362,21 @@ function IdeaCanvas({ onSave }: { onSave: (idea: StartupIdea) => void }) {
 
 export default function StartupLab() {
   const [ideas, setIdeas] = useState<StartupIdea[]>(() => startupStorage.getIdeas());
+  const [selectedItem, setSelectedItem] = useState<ChallengeResearch | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleIdeaSaved = (newIdea: StartupIdea) => {
     setIdeas(prev => [...prev, newIdea]);
+  };
+
+  const openModal = (item: ChallengeResearch) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
   };
 
   return (
@@ -287,15 +519,27 @@ export default function StartupLab() {
               <CardDescription>Real problems seeking research solutions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold">Low-Power 5G Modem Design</h4>
-                <p className="text-sm text-muted-foreground mt-1">Seeking breakthrough in power efficiency for mobile devices</p>
-                <div className="flex gap-2 mt-2">
-                  <Badge>5G</Badge>
-                  <Badge>Power</Badge>
-                  <Badge>RF</Badge>
+              {mockChallenges.filter(item => item.type === "challenge").map(challenge => (
+                <div 
+                  key={challenge.id}
+                  className="p-4 border rounded-lg cursor-pointer hover:shadow-md transition-all hover:border-primary/50"
+                  onClick={() => openModal(challenge)}
+                >
+                  <h4 className="font-semibold">{challenge.title}</h4>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    {challenge.description}
+                  </p>
+                  <div className="flex gap-2 mt-2">
+                    {challenge.tags.map(tag => (
+                      <Badge key={tag} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-xs text-muted-foreground">by {challenge.stakeholder}</span>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                  </div>
                 </div>
-              </div>
+              ))}
               <Button className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
                 Post Challenge
@@ -312,15 +556,27 @@ export default function StartupLab() {
               <CardDescription>Academic innovations ready for industry</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold">Neuromorphic Computing Chips</h4>
-                <p className="text-sm text-muted-foreground mt-1">Brain-inspired computing for ultra-low power AI</p>
-                <div className="flex gap-2 mt-2">
-                  <Badge>AI</Badge>
-                  <Badge>Neuromorphic</Badge>
-                  <Badge>Low-Power</Badge>
+              {mockChallenges.filter(item => item.type === "research").map(research => (
+                <div 
+                  key={research.id}
+                  className="p-4 border rounded-lg cursor-pointer hover:shadow-md transition-all hover:border-primary/50"
+                  onClick={() => openModal(research)}
+                >
+                  <h4 className="font-semibold">{research.title}</h4>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    {research.description}
+                  </p>
+                  <div className="flex gap-2 mt-2">
+                    {research.tags.map(tag => (
+                      <Badge key={tag} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-xs text-muted-foreground">by {research.stakeholder}</span>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                  </div>
                 </div>
-              </div>
+              ))}
               <Button className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
                 Submit Research
@@ -329,6 +585,12 @@ export default function StartupLab() {
           </Card>
         </div>
       </div>
+
+      <ChallengeModal 
+        item={selectedItem}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
     </div>
   );
 }
