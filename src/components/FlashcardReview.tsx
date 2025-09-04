@@ -38,37 +38,6 @@ export function FlashcardReview({ deck, isOpen, onClose, onDeckUpdate }: Flashca
     }
   }, [isOpen, deck]);
 
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (!isOpen || !showBack) return;
-      
-      switch (e.key) {
-        case '1':
-          handleReviewResponse('again');
-          break;
-        case '2':
-          handleReviewResponse('hard');
-          break;
-        case '3':
-          handleReviewResponse('good');
-          break;
-        case '4':
-          handleReviewResponse('easy');
-          break;
-        case ' ':
-          e.preventDefault();
-          if (!showBack) {
-            setShowBack(true);
-          }
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isOpen, showBack]);
-
   if (!deck || !deck.cards.length) return null;
 
   const currentCard = dueCards[currentIndex];
@@ -107,7 +76,38 @@ export function FlashcardReview({ deck, isOpen, onClose, onDeckUpdate }: Flashca
         description: `Reviewed ${stats.cardsReviewed} cards with ${stats.accuracy}% accuracy`,
       });
     }
-  }, [currentCard, deck, currentIndex, dueCards.length, reviewedCards, onDeckUpdate, toast]);
+  }, [currentCard, deck, currentIndex, dueCards.length, onDeckUpdate, toast]);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (!isOpen || !showBack) return;
+      
+      switch (e.key) {
+        case '1':
+          handleReviewResponse('again');
+          break;
+        case '2':
+          handleReviewResponse('hard');
+          break;
+        case '3':
+          handleReviewResponse('good');
+          break;
+        case '4':
+          handleReviewResponse('easy');
+          break;
+        case ' ':
+          e.preventDefault();
+          if (!showBack) {
+            setShowBack(true);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isOpen, showBack, handleReviewResponse]);
 
   const handleFlip = () => {
     setShowBack(!showBack);
