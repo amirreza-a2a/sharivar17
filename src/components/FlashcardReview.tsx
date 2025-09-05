@@ -30,7 +30,19 @@ export function FlashcardReview({ deck, isOpen, onClose, onDeckUpdate }: Flashca
     if (deck && isOpen) {
       const initializedCards = deck.cards.map(initializeCard);
       const due = getDueCards(initializedCards);
-      setDueCards(due);
+      
+      // If no cards are due, make all cards available for study
+      if (due.length === 0 && initializedCards.length > 0) {
+        // Force all cards to be due by setting their nextReviewDate to now
+        const forceAllDue = initializedCards.map(card => ({
+          ...card,
+          nextReviewDate: new Date().toISOString()
+        }));
+        setDueCards(forceAllDue);
+      } else {
+        setDueCards(due);
+      }
+      
       setCurrentIndex(0);
       setShowBack(false);
       setReviewedCards([]);
@@ -42,6 +54,17 @@ export function FlashcardReview({ deck, isOpen, onClose, onDeckUpdate }: Flashca
 
   const currentCard = dueCards[currentIndex];
   const progress = dueCards.length > 0 ? ((currentIndex + 1) / dueCards.length) * 100 : 0;
+
+  // If no current card, show loading or empty state
+  if (!currentCard && dueCards.length === 0) {
+    // This will be handled by the "no due cards" section below
+  } else if (!currentCard) {
+    // Invalid index, reset to 0
+    if (currentIndex >= dueCards.length && dueCards.length > 0) {
+      setCurrentIndex(0);
+      return null;
+    }
+  }
 
   const handleReviewResponse = useCallback((response: ReviewResponse) => {
     if (!currentCard || !deck) return;
