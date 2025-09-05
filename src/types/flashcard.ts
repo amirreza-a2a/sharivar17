@@ -5,13 +5,6 @@ export interface Flashcard {
   extraNotes?: string;
   imageUrl?: string;
   audioUrl?: string;
-  // SRS (Spaced Repetition System) data
-  level: number; // 1-4 (Again, Hard, Good, Easy)
-  nextReviewDate: string;
-  lastReviewDate?: string;
-  timesReviewed: number;
-  timesLapsed: number; // Number of failed attempts
-  isLeech?: boolean; // Cards repeatedly failed
 }
 
 export interface FlashcardDeck {
@@ -44,23 +37,3 @@ export interface FlashcardStats {
 export type DeckCategory = 'my-decks' | 'shared-decks' | 'import-decks';
 export type SortOption = 'newest' | 'popular' | 'rating' | 'alphabetical';
 export type ViewMode = 'grid' | 'list';
-
-// SRS (Spaced Repetition System) types
-export type ReviewResponse = 'again' | 'hard' | 'good' | 'easy';
-
-export interface ReviewSession {
-  deckId: string;
-  cardsReviewed: number;
-  accuracy: number;
-  troubleCards: Flashcard[];
-  completedAt: string;
-}
-
-export interface SRSSettings {
-  againInterval: number; // hours
-  hardInterval: number; // days  
-  goodInterval: number; // days
-  easyInterval: number; // days
-  maxDailyReviews: number;
-  leechThreshold: number; // number of lapses before marking as leech
-}

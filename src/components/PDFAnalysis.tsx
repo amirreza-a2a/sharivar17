@@ -124,11 +124,7 @@ export const PDFAnalysis = ({ extractedText, fileName }: PDFAnalysisProps) => {
       {
         id: crypto.randomUUID(),
         front: "Sample question from PDF",
-        back: "Sample answer extracted from content",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        back: "Sample answer extracted from content"
       }
     ];
     setExtractedFlashcards(mockCards);

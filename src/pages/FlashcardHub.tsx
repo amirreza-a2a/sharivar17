@@ -413,11 +413,6 @@ export default function FlashcardHub() {
         deck={reviewDeck}
         isOpen={!!reviewDeck}
         onClose={() => setReviewDeck(null)}
-        onDeckUpdate={(updatedDeck) => {
-          setMyDecks(prev => prev.map(deck => 
-            deck.id === updatedDeck.id ? updatedDeck : deck
-          ));
-        }}
       />
     </div>
   );

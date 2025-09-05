@@ -13,21 +13,13 @@ export const getMockDecks = (): FlashcardDeck[] => [
         id: "1-1",
         front: "What is a qubit?",
         back: "A quantum bit - the basic unit of quantum information that can exist in superposition of 0 and 1 states simultaneously.",
-        extraNotes: "Unlike classical bits, qubits can be in both states at once until measured.",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        extraNotes: "Unlike classical bits, qubits can be in both states at once until measured."
       },
       {
         id: "1-2",
         front: "Define quantum entanglement",
         back: "A quantum phenomenon where particles become interconnected, and the quantum state of each particle cannot be described independently.",
-        extraNotes: "Einstein called this 'spooky action at a distance'",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        extraNotes: "Einstein called this 'spooky action at a distance'"
       }
     ],
     coverImage: "/api/placeholder/300/200",
@@ -53,11 +45,7 @@ export const getMockDecks = (): FlashcardDeck[] => [
         id: "2-1",
         front: "What is the useCallback hook used for?",
         back: "useCallback returns a memoized callback function to prevent unnecessary re-renders of child components.",
-        extraNotes: "Useful when passing callbacks to optimized child components that rely on reference equality",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        extraNotes: "Useful when passing callbacks to optimized child components that rely on reference equality"
       }
     ],
     coverImage: "/api/placeholder/300/200",
@@ -83,11 +71,7 @@ export const getMockDecks = (): FlashcardDeck[] => [
         id: "3-1",
         front: "El ordenador",
         back: "Computer",
-        extraNotes: "In Latin America, 'computadora' is more commonly used",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        extraNotes: "In Latin America, 'computadora' is more commonly used"
       }
     ],
     coverImage: "/api/placeholder/300/200",
@@ -115,11 +99,7 @@ export const getMockSharedDecks = (): FlashcardDeck[] => [
         id: "4-1",
         front: "What is overfitting?",
         back: "When a model learns the training data too well, including noise, leading to poor performance on new data.",
-        extraNotes: "Can be prevented with regularization, cross-validation, and proper train/test splits",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        extraNotes: "Can be prevented with regularization, cross-validation, and proper train/test splits"
       }
     ],
     coverImage: "/api/placeholder/300/200",
@@ -144,11 +124,7 @@ export const getMockSharedDecks = (): FlashcardDeck[] => [
         id: "5-1",
         front: "What is an SN2 reaction?",
         back: "A nucleophilic substitution reaction that occurs in one step with inversion of configuration.",
-        extraNotes: "Rate depends on both nucleophile and substrate concentrations",
-        level: 1,
-        nextReviewDate: new Date().toISOString(),
-        timesReviewed: 0,
-        timesLapsed: 0
+        extraNotes: "Rate depends on both nucleophile and substrate concentrations"
       }
     ],
     coverImage: "/api/placeholder/300/200",
