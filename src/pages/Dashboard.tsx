@@ -68,6 +68,9 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Button onClick={() => navigate("/dashboard/learning-journal")} variant="outline" className="gap-2">
+            📖 Journal
+          </Button>
           <Button onClick={startQuiz} variant="outline" className="gap-2">
             <Brain className="w-4 h-4" />
             Retake Assessment

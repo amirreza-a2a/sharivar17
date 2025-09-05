@@ -22,6 +22,8 @@ import { SubLesson, Quiz, LessonResource, UserProgress } from "@/types/lesson";
 import { toast } from "sonner";
 import { addNote, completeSubLesson } from "@/utils/lessonStorage";
 import { cn } from "@/lib/utils";
+import { createJournalEntry, generateKeyPoints, addHighlightToEntry, getEntryByLessonId } from "@/utils/journalStorage";
+import { ReflectionModal } from "./ReflectionModal";
 
 interface LessonContentProps {
   subLesson: SubLesson;
@@ -44,6 +46,9 @@ export function LessonContent({
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [showReflectionModal, setShowReflectionModal] = useState(false);
+  const [currentJournalEntry, setCurrentJournalEntry] = useState<any>(null);
+  const [lessonStartTime] = useState(Date.now());
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -63,13 +68,24 @@ export function LessonContent({
   const handleHighlight = () => {
     if (!selectedText) return;
     
+    // Add to legacy notes system
     addNote({
       lessonId: subLesson.id,
       text: noteText || "Highlighted text",
       highlighted: selectedText
     });
     
-    toast.success("Text highlighted and saved!");
+    // Add to journal if entry exists
+    const journalEntry = getEntryByLessonId(subLesson.id);
+    if (journalEntry) {
+      addHighlightToEntry(journalEntry.id, {
+        text: selectedText,
+        timestamp: new Date(),
+        context: noteText || "Highlighted during lesson"
+      });
+    }
+    
+    toast.success("Text highlighted and saved to journal!");
     setSelectedText("");
     setNoteText("");
     setShowNoteDialog(false);
@@ -93,7 +109,32 @@ export function LessonContent({
 
   const handleComplete = () => {
     completeSubLesson(moduleId, lessonId, subLesson.id);
+    
+    // Calculate time spent
+    const timeSpent = Math.round((Date.now() - lessonStartTime) / (1000 * 60));
+    
+    // Generate key points from lesson content
+    const keyPoints = generateKeyPoints(subLesson.content);
+    
+    // Create journal entry
+    const journalEntry = createJournalEntry(
+      subLesson.id,
+      subLesson.title,
+      moduleId,
+      `Module ${moduleId}`, // You might want to get actual module title
+      timeSpent,
+      keyPoints,
+      [] // Mistakes would be tracked during quiz attempts
+    );
+    
+    setCurrentJournalEntry(journalEntry);
+    setShowReflectionModal(true);
+    
     toast.success("Lesson completed! +25 XP earned!");
+  };
+
+  const handleReflectionComplete = () => {
+    setShowReflectionModal(false);
     onComplete();
   };
 
@@ -408,6 +449,16 @@ export function LessonContent({
           </div>
         </ScrollArea>
       </div>
+
+      {/* Reflection Modal */}
+      {showReflectionModal && currentJournalEntry && (
+        <ReflectionModal
+          isOpen={showReflectionModal}
+          onClose={handleReflectionComplete}
+          journalEntry={currentJournalEntry}
+          onSave={handleReflectionComplete}
+        />
+      )}
     </div>
   );
 }

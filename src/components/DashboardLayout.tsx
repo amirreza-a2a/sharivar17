@@ -13,7 +13,8 @@ import {
   X,
   Brain,
   Lightbulb,
-  Users
+  Users,
+  NotebookPen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,6 +38,7 @@ const sidebarItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "My Learning Path", url: "/dashboard/learning-path", icon: BookOpen },
   { title: "Lessons", url: "/dashboard/lessons", icon: BookOpen },
+  { title: "Learning Journal", url: "/dashboard/learning-journal", icon: NotebookPen },
   { title: "Practice & Challenges", url: "/dashboard/practice", icon: Target },
   { title: "Research & R&D Tools", url: "/dashboard/research", icon: Wrench },
   { title: "PDF Analyzer", url: "/dashboard/pdf", icon: FileText },

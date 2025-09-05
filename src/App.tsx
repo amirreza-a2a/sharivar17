@@ -17,6 +17,7 @@ import { RDToolsPage } from "./components/RDToolsPage";
 import { PDFAnalysisPage } from "./components/PDFAnalysisPage";
 import ElectronicsHubPage from "./components/ElectronicsHubPage";
 import DashboardSettings from "./pages/DashboardSettings";
+import LearningJournal from "./pages/LearningJournal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="learning-path" element={<LearningPath />} />
               <Route path="lessons" element={<Lessons />} />
+              <Route path="learning-journal" element={<LearningJournal />} />
               <Route path="practice" element={<PracticeProjectsPage onBack={() => {}} />} />
               <Route path="research" element={<RDToolsPage />} />
               <Route path="pdf" element={<PDFAnalysisPage onBack={() => {}} />} />
