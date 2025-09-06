@@ -274,6 +274,8 @@ export default function LearningPath() {
         open={showPathDiscovery}
         onOpenChange={setShowPathDiscovery}
         onAddPath={handleAddPath}
+        userLevel={userLevel}
+        currentSubjects={["Embedded Systems", "C Programming"]}
       />
     </div>
   );
