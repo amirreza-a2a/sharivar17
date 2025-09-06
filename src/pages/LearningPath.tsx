@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { BookOpen, PlayCircle, CheckCircle, Plus, Brain } from "lucide-react";
 import { toast } from "sonner";
 import LessonChatbot from "@/components/LessonChatbot";
+import PathDiscoveryModal from "@/components/PathDiscoveryModal";
 
 export default function LearningPath() {
   const [searchParams] = useSearchParams();
@@ -15,6 +16,8 @@ export default function LearningPath() {
   const [quizAnswers, setQuizAnswers] = useState<string[]>([]);
   const [userLevel, setUserLevel] = useState("");
   const [showLesson, setShowLesson] = useState(false);
+  const [showPathDiscovery, setShowPathDiscovery] = useState(false);
+  const [addedPaths, setAddedPaths] = useState<string[]>([]);
   const navigate = useNavigate();
 
   const quizQuestions = [
@@ -80,6 +83,12 @@ export default function LearningPath() {
       setQuizAnswers([]);
       toast.success("Your personalized learning path is ready!");
     }
+  };
+
+  const handleAddPath = (pathId: string) => {
+    setAddedPaths(prev => [...prev, pathId]);
+    // Here you would typically add the path to the user's learning paths
+    // For now, we'll just show success feedback
   };
 
   const learningPaths = [
@@ -244,19 +253,28 @@ export default function LearningPath() {
         ))}
       </div>
 
-      <Card className="border-dashed">
+      <Card className="border-dashed hover:border-primary/50 transition-colors">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <Plus className="w-12 h-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Get More Learning Paths</h3>
+          <h3 className="text-lg font-semibold mb-2">Discover New Learning Paths</h3>
           <p className="text-muted-foreground text-center mb-4 max-w-md">
-            Explore additional specialized tracks like DevOps, AI/ML, or Advanced Electronics
+            Explore curated learning paths created by experts and the community. Find specialized tracks in DevOps, AI/ML, Web Development, and more.
           </p>
-          <Button className="gap-2">
+          <Button 
+            className="gap-2"
+            onClick={() => setShowPathDiscovery(true)}
+          >
             <Plus className="w-4 h-4" />
             Browse Available Paths
           </Button>
         </CardContent>
       </Card>
+
+      <PathDiscoveryModal
+        open={showPathDiscovery}
+        onOpenChange={setShowPathDiscovery}
+        onAddPath={handleAddPath}
+      />
     </div>
   );
 }
