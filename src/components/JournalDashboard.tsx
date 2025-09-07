@@ -27,9 +27,10 @@ import { cn } from "@/lib/utils";
 interface JournalDashboardProps {
   onReviewMistakes?: (entries: JournalEntry[]) => void;
   onReviewHighlights?: (entries: JournalEntry[]) => void;
+  onEntriesLoad?: (entries: JournalEntry[]) => void;
 }
 
-export function JournalDashboard({ onReviewMistakes, onReviewHighlights }: JournalDashboardProps) {
+export function JournalDashboard({ onReviewMistakes, onReviewHighlights, onEntriesLoad }: JournalDashboardProps) {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [stats, setStats] = useState<JournalStats | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,6 +52,11 @@ export function JournalDashboard({ onReviewMistakes, onReviewHighlights }: Journ
     
     setEntries(sortedEntries);
     setStats(journalStats);
+    
+    // Pass entries to parent for mindmap
+    if (onEntriesLoad) {
+      onEntriesLoad(sortedEntries);
+    }
   };
 
   const filteredAndSortedEntries = entries

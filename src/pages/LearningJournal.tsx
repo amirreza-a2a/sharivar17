@@ -3,12 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JournalDashboard } from "@/components/JournalDashboard";
+import { JournalMindmap } from "@/components/JournalMindmap";
 import { 
   BookOpen, 
   RotateCcw, 
   Highlighter, 
   TrendingUp,
-  ArrowLeft
+  ArrowLeft,
+  Brain
 } from "lucide-react";
 import { JournalEntry } from "@/types/journal";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 export default function LearningJournal() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [journalEntries, setJournalEntries] = useState([]);
 
   const handleReviewMistakes = (entries: JournalEntry[]) => {
     // TODO: Implement mistake review mode
@@ -54,10 +57,14 @@ export default function LearningJournal() {
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="flex justify-center mb-8">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="dashboard" className="gap-2">
               <TrendingUp className="w-4 h-4" />
               Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="mindmap" className="gap-2">
+              <Brain className="w-4 h-4" />
+              Mindmap
             </TabsTrigger>
             <TabsTrigger value="mistakes" className="gap-2">
               <RotateCcw className="w-4 h-4" />
@@ -75,6 +82,19 @@ export default function LearningJournal() {
           <JournalDashboard
             onReviewMistakes={handleReviewMistakes}
             onReviewHighlights={handleReviewHighlights}
+            onEntriesLoad={setJournalEntries}
+          />
+        </TabsContent>
+
+        {/* Mindmap Tab */}
+        <TabsContent value="mindmap">
+          <JournalMindmap 
+            entries={journalEntries}
+            onNodeClick={(node) => {
+              // Switch to dashboard and scroll to relevant entry
+              setActiveTab("dashboard");
+              console.log("Navigate to entry:", node.entryId);
+            }}
           />
         </TabsContent>
 
