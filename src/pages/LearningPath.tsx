@@ -8,6 +8,7 @@ import { BookOpen, PlayCircle, CheckCircle, Plus, Brain } from "lucide-react";
 import { toast } from "sonner";
 import LessonChatbot from "@/components/LessonChatbot";
 import PathDiscoveryModal from "@/components/PathDiscoveryModal";
+import LearningPathStartModal from "@/components/LearningPathStartModal";
 
 export default function LearningPath() {
   const [searchParams] = useSearchParams();
@@ -17,6 +18,8 @@ export default function LearningPath() {
   const [userLevel, setUserLevel] = useState("");
   const [showLesson, setShowLesson] = useState(false);
   const [showPathDiscovery, setShowPathDiscovery] = useState(false);
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [selectedPathId, setSelectedPathId] = useState<string>("");
   const [addedPaths, setAddedPaths] = useState<string[]>([]);
   const navigate = useNavigate();
 
@@ -89,6 +92,25 @@ export default function LearningPath() {
     setAddedPaths(prev => [...prev, pathId]);
     // Here you would typically add the path to the user's learning paths
     // For now, we'll just show success feedback
+  };
+
+  const handleStartLearning = (pathId: string) => {
+    setSelectedPathId(pathId);
+    setShowStartModal(true);
+  };
+
+  const handleSmartStart = () => {
+    setShowStartModal(false);
+    setShowQuiz(true);
+    toast.success("Let's find your perfect starting point!");
+  };
+
+  const handleStartFromBeginning = () => {
+    setShowStartModal(false);
+    setUserLevel("Beginner");
+    localStorage.setItem("user_level", "Beginner");
+    navigate('/dashboard/lessons');
+    toast.success("Starting from the beginning - let's learn together!");
   };
 
   const learningPaths = [
@@ -187,9 +209,9 @@ export default function LearningPath() {
             <Brain className="w-4 h-4" />
             Retake Assessment
           </Button>
-          <Button onClick={() => navigate('/dashboard/lessons')} className="gap-2">
+          <Button onClick={() => handleStartLearning("current")} className="gap-2">
             <PlayCircle className="w-4 h-4" />
-            Continue Learning
+            Start Learning
           </Button>
         </div>
       </div>
@@ -208,9 +230,14 @@ export default function LearningPath() {
                   <p className="text-muted-foreground mt-1">{path.description}</p>
                 </div>
                 {!path.active && (
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2"
+                    onClick={() => handleStartLearning(path.id)}
+                  >
                     <Plus className="w-4 h-4" />
-                    Add Path
+                    Start Learning
                   </Button>
                 )}
               </div>
@@ -276,6 +303,14 @@ export default function LearningPath() {
         onAddPath={handleAddPath}
         userLevel={userLevel}
         currentSubjects={["Embedded Systems", "C Programming"]}
+      />
+
+      <LearningPathStartModal
+        open={showStartModal}
+        onOpenChange={setShowStartModal}
+        onSmartStart={handleSmartStart}
+        onStartFromBeginning={handleStartFromBeginning}
+        pathTitle={learningPaths.find(p => p.id === selectedPathId)?.title || "Learning Path"}
       />
     </div>
   );
