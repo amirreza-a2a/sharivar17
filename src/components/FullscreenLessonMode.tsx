@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { 
   X, 
   ChevronLeft, 
@@ -10,10 +11,15 @@ import {
   Clock,
   Trophy,
   Star,
-  ArrowRight
+  ArrowRight,
+  MessageSquare,
+  FolderOpen,
+  Sidebar
 } from "lucide-react";
 import { SubLesson, UserProgress, Module, Lesson } from "@/types/lesson";
 import { LessonContent } from "./LessonContent";
+import { LessonChatAssistant } from "./LessonChatAssistant";
+import { LessonResources } from "./LessonResources";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +51,8 @@ export function FullscreenLessonMode({
   const [showSummary, setShowSummary] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [lessonProgress, setLessonProgress] = useState(0);
+  const [showChatPanel, setShowChatPanel] = useState(true);
+  const [showResourcePanel, setShowResourcePanel] = useState(true);
 
   // Calculate lesson progress
   useEffect(() => {
@@ -168,29 +176,21 @@ export function FullscreenLessonMode({
   // Main Fullscreen Lesson View
   return (
     <div className="fixed inset-0 z-50 bg-background animate-fade-in">
-      {/* Sticky Header with Fade Effect */}
-      <div 
-        className={cn(
-          "sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b transition-all duration-300",
-          scrollY > 100 ? "opacity-90" : "opacity-100"
-        )}
-        style={{
-          transform: `translateY(${Math.min(scrollY / 4, 20)}px)`,
-        }}
-      >
-        <div className="flex items-center justify-between p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b">
+        <div className="flex items-center justify-between p-4">
           {/* Left: Navigation */}
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="hover:bg-muted rounded-xl"
+              className="hover:bg-muted"
             >
               <X className="w-5 h-5" />
             </Button>
             <div className="hidden sm:block">
-              <h1 className="font-bold text-lg truncate max-w-md">{subLesson.title}</h1>
+              <h1 className="font-semibold text-lg">{subLesson.title}</h1>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />
                 <span>{subLesson.estimatedTime} min</span>
@@ -202,93 +202,149 @@ export function FullscreenLessonMode({
           <div className="flex-1 max-w-md mx-8">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Lesson Progress</span>
+                <span>Progress</span>
                 <span>{Math.round(lessonProgress)}%</span>
               </div>
               <Progress value={lessonProgress} className="h-2" />
             </div>
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex items-center space-x-3">
-            {onPrevious && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onPrevious}
-                className="hidden sm:flex"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Previous
-              </Button>
-            )}
-            {onNext && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onNext}
-                className="hidden sm:flex"
-              >
-                Next
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            )}
+          {/* Right: Panel Controls */}
+          <div className="flex items-center space-x-2">
+            <Button
+              variant={showChatPanel ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowChatPanel(!showChatPanel)}
+              className="hidden md:flex items-center gap-2"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Chat
+            </Button>
+            <Button
+              variant={showResourcePanel ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowResourcePanel(!showResourcePanel)}
+              className="hidden md:flex items-center gap-2"
+            >
+              <FolderOpen className="w-4 h-4" />
+              Resources
+            </Button>
+            
+            {/* Mobile menu toggle */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="md:hidden"
+            >
+              <Sidebar className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <ScrollArea className="h-full">
-        <div className="min-h-screen">
-          <LessonContent
-            subLesson={subLesson}
-            moduleId={moduleId}
-            lessonId={lessonId}
-            userProgress={userProgress}
-            onComplete={handleLessonComplete}
-          />
-          
-          {/* Bottom Navigation */}
-          <div className="sticky bottom-0 bg-background/80 backdrop-blur-md border-t p-6">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                {onPrevious && (
-                  <Button
-                    variant="outline"
-                    onClick={onPrevious}
-                    className="flex items-center space-x-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Previous</span>
-                  </Button>
-                )}
-              </div>
+      {/* Main Content Area */}
+      <div className="h-[calc(100vh-73px)]">
+        <ResizablePanelGroup direction="horizontal" className="w-full h-full">
+          {/* Left Panel: AI Chat Assistant */}
+          {showChatPanel && (
+            <>
+              <ResizablePanel 
+                defaultSize={25} 
+                minSize={20} 
+                maxSize={40}
+                className="hidden md:block"
+              >
+                <LessonChatAssistant 
+                  lessonTitle={subLesson.title}
+                  lessonContent={subLesson.content}
+                />
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+            </>
+          )}
 
-              <div className="flex items-center space-x-4">
-                {!subLesson.completed && !subLesson.quiz && (
-                  <Button 
-                    onClick={handleLessonComplete}
-                    className="gradient-success text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
-                  >
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Mark as Complete
-                  </Button>
-                )}
-                
-                {onNext && subLesson.completed && (
-                  <Button
-                    onClick={onNext}
-                    className="gradient-primary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
-                  >
-                    <span>Next Lesson</span>
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                )}
+          {/* Central Panel: Lesson Content */}
+          <ResizablePanel 
+            defaultSize={showChatPanel && showResourcePanel ? 50 : showChatPanel || showResourcePanel ? 75 : 100}
+            minSize={30}
+          >
+            <div className="h-full flex flex-col bg-background">
+              <ScrollArea className="flex-1">
+                <div className="p-6">
+                  <LessonContent
+                    subLesson={subLesson}
+                    moduleId={moduleId}
+                    lessonId={lessonId}
+                    userProgress={userProgress}
+                    onComplete={handleLessonComplete}
+                  />
+                </div>
+              </ScrollArea>
+              
+              {/* Bottom Navigation */}
+              <div className="border-t bg-background/95 backdrop-blur-md p-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-4">
+                    {onPrevious && (
+                      <Button
+                        variant="outline"
+                        onClick={onPrevious}
+                        className="flex items-center space-x-2"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        <span className="hidden sm:inline">Previous</span>
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    {!subLesson.completed && !subLesson.quiz && (
+                      <Button 
+                        onClick={handleLessonComplete}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 font-medium"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">Mark as</span> Complete
+                      </Button>
+                    )}
+                    
+                    {onNext && subLesson.completed && (
+                      <Button
+                        onClick={onNext}
+                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium"
+                      >
+                        <span className="hidden sm:inline">Next Lesson</span>
+                        <span className="sm:hidden">Next</span>
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </ResizablePanel>
+
+          {/* Right Panel: Resources */}
+          {showResourcePanel && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel 
+                defaultSize={25} 
+                minSize={20} 
+                maxSize={40}
+                className="hidden md:block"
+              >
+                <LessonResources lessonTitle={subLesson.title} />
+              </ResizablePanel>
+            </>
+          )}
+        </ResizablePanelGroup>
+
+        {/* Mobile Bottom Sheet for Chat and Resources */}
+        <div className="md:hidden">
+          {/* Mobile panels would be implemented as modal overlays or bottom sheets */}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
